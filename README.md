@@ -5,7 +5,8 @@
 
 ### 工程结构
 
-### ├── README.md
+```
+├── README.md
 ├── config --配置文件读取
 │   ├── conf.go
 │   └── conf.yaml
@@ -24,6 +25,7 @@
 └── service --service层
     ├── WsService.go
     └── rtspTransService.go
+```
 
 ### 技术栈
 * gin 是一个用 Go (Golang) 编写的 web 框架，用来写接口和http服务
