@@ -4,8 +4,8 @@
 ## 项目说明
 
 ### 工程结构
-.
-├── README.md
+
+### ├── README.md
 ├── config --配置文件读取
 │   ├── conf.go
 │   └── conf.yaml
