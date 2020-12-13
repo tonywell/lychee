@@ -1,0 +1,11 @@
+server:
+  address: 0.0.0.0
+  port: 8000
+log:
+  name: lychee
+  fileName: /go/logs/lychee.log
+  maxSize: 500
+  maxBackups: 3
+  maxAge: 3
+  stdout: true
+  level: "debug"
