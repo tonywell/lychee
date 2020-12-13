@@ -6,21 +6,22 @@
 ### 工程结构
 .
 ├── README.md
-├── config  --配置文件读取
+├── config --配置文件读取
 │   ├── conf.go
 │   └── conf.yaml
-├── controller --接口
+├── controller. --接口
 │   └── rtsp.go
 ├── go.mod
 ├── go.sum
-├── logger  --日志模块
+├── logger --日志模块
 │   └── logger.go
-├── response  --web响应
+├── lychee --可执行程序
+├── response --web响应
 │   └── response.go
-├── router  --路由
+├── router --路由
 │   └── router.go
 ├── server.go
-└── service  --service层
+└── service --service层
     ├── WsService.go
     └── rtspTransService.go
 
