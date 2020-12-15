@@ -19,6 +19,7 @@ func Routers() *gin.Engine {
 	route := g.Group("/stream")
 	{
 		route.POST("/push", controller.AcceptRespAndPushToFfmpeg)
+		route.POST("/upload/:channel", controller.Mpeg1Video)
 		route.GET("/live/:channel", controller.Wsplay)
 	}
 	return g

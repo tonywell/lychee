@@ -76,7 +76,7 @@ func toTrans(req *RtspTransReq, channel string) (*exec.Cmd, io.WriteCloser, erro
 	build.WriteString(",")
 	build.WriteString(req.ParamBehind)
 	build.WriteString(",")
-	build.WriteString(fmt.Sprintf("http://127.0.0.1:%s/stream/live/%s", port, channel))
+	build.WriteString(fmt.Sprintf("http://127.0.0.1:%s/stream/upload/%s", port, channel))
 	tempParam := build.String()
 	params := strings.Split(tempParam, ",")
 	logger.ZapLogger.Info("FFmpeg cmd: ffmpeg " + strings.Join(params, " "))
