@@ -1,7 +1,6 @@
 package service
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -28,13 +27,23 @@ var processMap sync.Map
 
 func (req *RtspTransReq) Service() *response.Response {
 	simpleString := strings.Replace(req.SourceUrl, "//", "/", 1)
-	// splitList := strings.Split(simpleString, "/")
 	channel := uuid.NewV3(uuid.NamespaceURL, simpleString).String()
+	port := config.AllConfig.Server.Port
+	var build strings.Builder
+	build.WriteString(req.ParamBefore)
+	build.WriteString(" ")
+	build.WriteString(req.SourceUrl)
+	build.WriteString(" ")
+	build.WriteString(req.ParamBehind)
+	build.WriteString(" ")
+	build.WriteString(fmt.Sprintf("http://127.0.0.1:%s/stream/upload/%s", port, channel))
+	commandStr := build.String()
+	args := strings.Split(commandStr, " ")
 	if ch, ok := processMap.Load(channel); ok {
 		*ch.(*chan int) <- 1
 	} else {
 		reflush := make(chan int)
-		if cmd, stdin, err := toTrans(req, channel); err != nil {
+		if cmd, stdin, err := toTrans(args); err != nil {
 			return response.Err(400, err.Error(), err)
 		} else {
 			go keepAlive(cmd, stdin, &reflush, channel)
@@ -67,36 +76,20 @@ func keepAlive(cmd *exec.Cmd, stdin io.WriteCloser, ch *chan int, channel string
 }
 
 // toTrans 通过FFMPEG实现rtsp转websocket代理
-func toTrans(req *RtspTransReq, channel string) (*exec.Cmd, io.WriteCloser, error) {
-	port := config.AllConfig.Server.Port
-	var build strings.Builder
-	build.WriteString(req.ParamBefore)
-	build.WriteString(",")
-	build.WriteString(req.SourceUrl)
-	build.WriteString(",")
-	build.WriteString(req.ParamBehind)
-	build.WriteString(",")
-	build.WriteString(fmt.Sprintf("http://127.0.0.1:%s/stream/upload/%s", port, channel))
-	tempParam := build.String()
-	params := strings.Split(tempParam, ",")
-	logger.ZapLogger.Info("FFmpeg cmd: ffmpeg " + strings.Join(params, " "))
-	outInfo := bytes.Buffer{}
+func toTrans(params []string) (*exec.Cmd, io.WriteCloser, error) {
 	cmd := exec.Command("ffmpeg", params...)
-	logger.ZapLogger.Info(fmt.Sprintf("command args is %s", cmd.Args))
-	cmd.Stdout = &outInfo
+	logger.ZapLogger.Info("FFmpeg cmd args: " + strings.Join(params, " "))
+	// cmd := exec.Command("ffmpeg", "-y", "-rtsp_transport", "tcp", "-re", "-i", "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov", "-q", "5", "-f", "mpegts", "-c:v", "mpeg1video", "-an", "-s", "960x540", "http://127.0.0.1:8000/stream/upload/02385e5f-6307-3f77-8674-0ba26d233255")
 	cmd.Stderr = nil
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		logger.ZapLogger.Error(fmt.Sprintf("Get ffmpeg stdin err:%v", err.Error()))
 		return nil, nil, errors.New("拉流进程启动失败")
 	}
-
 	err = cmd.Start()
 	if err != nil {
 		logger.ZapLogger.Info(fmt.Sprintf("Start ffmpeg err: %v", err.Error()))
 		return nil, nil, errors.New("打开摄像头视频流失败")
 	}
-	logger.ZapLogger.Info(fmt.Sprintf("command output is %s", outInfo.String()))
-	logger.ZapLogger.Info(fmt.Sprintf("Translate rtsp %v to %v", req.SourceUrl, channel))
 	return cmd, stdin, nil
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bufio"
+	"lychee/logger"
 	"lychee/service"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ func AcceptRespAndPushToFfmpeg(c *gin.Context) {
 // Mpeg1Video 接收 mpeg1vido 数据流
 func Mpeg1Video(c *gin.Context) {
 	bodyReader := bufio.NewReader(c.Request.Body)
-
+	logger.ZapLogger.Error("上传视频流")
 	for {
 		data, err := bodyReader.ReadBytes('\n')
 		if err != nil {
