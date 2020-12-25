@@ -48,11 +48,13 @@ $ ./lychee
 ```
 POST /stream/push
 {
+   "clarity": "HD",
    "sourceUrl": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov",
    "paramBefore": "-y -rtsp_transport tcp -re -i",
    "paramBehind": "-q 0 -f mpegts -c:v mpeg1video -an -s 960x540"
 }
 ```
+* clarity: 清晰度SD、HD
 * sourceUrl： 为RTSP源地址，这里我是网上找到的一个用于测试的地址，比较卡，转的过程中会终端，测试的时候需要改为稳定且速度正常的RTSP源
 * paramBefore： ffmpeg命令中，在源地址前面的参数
 * paramBehind： ffmpeg命令中，在源地址后的参数
