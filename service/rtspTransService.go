@@ -18,6 +18,7 @@ import (
 //RtspTransReq rtsp转websocket代理请求 struct
 type RtspTransReq struct {
 	SourceUrl   string `json:"sourceUrl"`
+	Clarity     string
 	ParamBefore string
 	ParamBehind string
 }
@@ -27,6 +28,7 @@ var processMap sync.Map
 
 func (req *RtspTransReq) Service() *response.Response {
 	simpleString := strings.Replace(req.SourceUrl, "//", "/", 1)
+	simpleString = simpleString + req.ParamBefore
 	channel := uuid.NewV3(uuid.NamespaceURL, simpleString).String()
 	port := config.AllConfig.Server.Port
 	var build strings.Builder
